@@ -1,0 +1,38 @@
+import pandas as pd
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+
+# Load the Titanic dataset using Seaborn
+df = sns.load_dataset('titanic')
+
+# Display the first few rows of the dataset
+print(df.head())
+
+# Data Preprocessing
+df['age'].fillna(df['age'].median(), inplace=True)
+df = pd.get_dummies(df, columns=['sex', 'embarked'], drop_first=True)
+
+X = df[['pclass', 'age', 'sibsp', 'parch', 'fare', 'sex_male', 'embarked_Q', 'embarked_S']]
+y = df['survived']
+
+# Split Data into Training and Testing Sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Train a Model
+model = RandomForestClassifier(random_state=42)
+model.fit(X_train, y_train)
+
+# Make Predictions
+predictions = model.predict(X_test)
+
+# Evaluate the Model
+accuracy = accuracy_score(y_test, predictions)
+report = classification_report(y_test, predictions)
+print(f'Accuracy: {accuracy}')
+print(f'Classification Report:\n{report}')
+
+df.info()
+
+df
